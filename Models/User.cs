@@ -8,7 +8,7 @@
         public string PasswordHash { get; set; } = null!;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
-        public List<BankAccount> BankAccounts { get; set; }
+        public List<BankAccount> BankAccounts { get; set; } = new()
 
         public void SoftDelete()
         {

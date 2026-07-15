@@ -7,6 +7,7 @@
         public string? Description { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
+        public List<Transaction> Transactions { get; set; } = new();
 
         public void SoftDelete()
         {
