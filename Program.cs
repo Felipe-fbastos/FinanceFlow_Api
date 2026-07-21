@@ -1,8 +1,10 @@
 using FinanceFlowAPI.Data;
 using FinanceFlowAPI.Mappper;
 using FinanceFlowAPI.Middlerware;
+using FinanceFlowAPI.Models;
 using FinanceFlowAPI.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -42,6 +44,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<PasswordHasher<User>>();
 builder.Services.RegisterMaps();
 
 var app = builder.Build();

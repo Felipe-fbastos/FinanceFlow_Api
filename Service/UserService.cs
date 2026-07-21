@@ -13,12 +13,13 @@ namespace FinanceFlowAPI.Service
     {
         public readonly TokenService _tokenService;
         public readonly AppDataContext _context;
-        public readonly PasswordHasher<string> _passwordHasher;
+        public readonly PasswordHasher<User> _passwordHasher;
 
         public UserService(TokenService tokenService, AppDataContext context)
         {
             _tokenService = tokenService;
             _context = context;
+            _passwordHasher = new PasswordHasher<User>();
         }
 
         
@@ -56,15 +57,15 @@ namespace FinanceFlowAPI.Service
 
             if (existEmail)
             {
-                throw new ConflictException("Email or password incorret");
+                throw new ConflictException("Email already registered");
             }
 
             var user = dto.Adapt<User>();
 
-            user.PasswordHash = _passwordHasher.HashPassword(null, dto.PasswordHash);
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.PasswordHash);
 
-            user.CreatedAt = DateTime.Now;
-            user.UpdatedAt = DateTime.Now;
+            user.CreatedAt = DateTime.UtcNow;
+            user.UpdatedAt = DateTime.UtcNow;
 
             _context.Add(user);
 
@@ -81,7 +82,7 @@ namespace FinanceFlowAPI.Service
 
             if(user == null)
             {
-                throw new NotFoundException("Email or password invalid");
+                throw new UnAuthotizedException("Email or password invalid");
             }
 
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.PasswordHash);
@@ -92,6 +93,46 @@ namespace FinanceFlowAPI.Service
             }
 
             return _tokenService.GenerateToken(user);
+        }
+
+        public async Task UpdateAsync(UserPutDTO dto, int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            if(user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            bool existEmail = await _context.Users
+                .AnyAsync(e => e.Email == dto.Email && e.Id != id);
+
+            if (existEmail)
+            {
+                throw new ConflictException("Email already register");
+            }
+
+            dto.Adapt(user);
+
+            user.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            user.SoftDelete();
+
+            user.DeletedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
         }
     }
 }
