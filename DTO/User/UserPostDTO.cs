@@ -1,7 +1,8 @@
-﻿namespace FinanceFlowAPI.DTO
+﻿namespace FinanceFlowAPI.DTO.User
 {
-    public class UserLoginDTO
+    public class UserPostDTO
     {
+        public string Name { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string PasswordHash { get; set; } = null!;
     }

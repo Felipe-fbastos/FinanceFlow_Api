@@ -1,5 +1,5 @@
 ﻿using FinanceFlowAPI.Data;
-using FinanceFlowAPI.DTO;
+using FinanceFlowAPI.DTO.User;
 using FinanceFlowAPI.Exceptions;
 using FinanceFlowAPI.Models;
 using Mapster;
